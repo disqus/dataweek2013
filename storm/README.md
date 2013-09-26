@@ -14,7 +14,7 @@ chmod 755 ~/bin/lein
 lein do clean, deps, build
 
 # Run the project
-lein run -m disqus.dataweek.CountTopology
+lein run -m disqus.dataweek.DemoTopology
 ```
 
 ## License
