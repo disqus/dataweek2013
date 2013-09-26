@@ -1,6 +1,6 @@
-# dataweek
+# Dataweek
 
-Disqus' Dataweek Lab
+The Disqus Dataweek Lab Repo
 
 ## Usage
 
