@@ -13,6 +13,9 @@ import disqus.dataweek.spout.GnipSpout
 
 object DemoTopology {
   val _map: HashMap[String,Int] = HashMap[String,Int]()
+  val wordBank: Set[String] = Set("shutdown", "shut down", "government", "politicians", "republicans", "democrats", "politics", "obama", "congress", "congressional", "obamacare", "white house", "Nancy Pelosi", "Harry Reid", "Mitch McConnell", "John Boehner", "aca", "affordable care act", "washington")
+  var obamacare: Double = 0
+  var total: Double = 0
 
   /**
    * Generic bolt template.
@@ -41,33 +44,23 @@ object DemoTopology {
     }
   }
 
-  class SplitMessage extends BaseBasicBolt {
+  class Count extends BaseBasicBolt {
     override def execute(tuple: Tuple, collector: BasicOutputCollector) {
         val message: String = tuple.getString(0)
+        var aboutObamacare: Boolean = false
         for (word <- message.split(" ")) {
-          collector.emit(new Values(word))
+          if (wordBank contains word.toLowerCase)
+            aboutObamacare = true
         }
+        if (aboutObamacare)
+          obamacare += 1
+        total += 1
+
+        collector.emit(new Values(100*obamacare/total: java.lang.Double))
     }
 
     override def declareOutputFields(declarer: OutputFieldsDeclarer) { 
         declarer.declare(new Fields("word"))
-    }
-  }
-
-  class Count extends BaseBasicBolt {
-    override def execute(tuple: Tuple, collector: BasicOutputCollector) {
-        val word: String = tuple.getString(0)
-
-        if (_map contains word)
-          _map += (word -> (_map(word)+1))
-        else
-          _map += (word -> 1)
-
-        collector.emit(new Values(word, _map(word).asInstanceOf[java.lang.Integer]))
-    }
-
-    override def declareOutputFields(declarer: OutputFieldsDeclarer) {
-        declarer.declare(new Fields("word", "count"))
     }
   }
 
@@ -82,10 +75,8 @@ object DemoTopology {
     builder.setSpout("0-word-spout", new GnipSpout())
     builder.setBolt("1-message", new Message(), 1)
       .shuffleGrouping("0-word-spout")
-    builder.setBolt("2-split", new SplitMessage(), 1)
+    builder.setBolt("2-count", new Count(), 1)
       .shuffleGrouping("1-message")
-    builder.setBolt("3-count", new Count(), 1)
-      .fieldsGrouping("2-split", new Fields("word"))
 
     /* Run topology in either local or remote mode */
     if (args.length == 0) {
