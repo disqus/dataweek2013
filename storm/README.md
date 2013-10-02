@@ -11,7 +11,7 @@ curl -L "https://raw.github.com/technomancy/leiningen/stable/bin/lein" > ~/bin/l
 chmod 755 ~/bin/lein
 
 # Build the project
-lein do clean, deps, build, scalac
+lein do clean, deps, scalac
 
 # Run the project
 lein run -m disqus.dataweek.DemoTopology
