@@ -9,8 +9,13 @@ The Disqus Dataweek Lab Repo
 mkdir ~/bin/
 curl -L "https://raw.github.com/technomancy/leiningen/stable/bin/lein" > ~/bin/lein
 chmod 755 ~/bin/lein
+export PATH=$PATH:~/bin
 
-# Build the project
+# Clone the repo, you'll need git installed or use one of our USB sticks
+git clone https://github.com/disqus/dataweek2013.git
+cd dataweek2013/storm
+
+# Build the project, you'll need java installed
 lein do clean, deps, scalac
 
 # Run the project
