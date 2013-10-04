@@ -34,6 +34,10 @@ object DemoTopology {
       if (tag.split(":")(1) != "gnip.disqus.com")
           return
 
+      val verb: String = json("verb").asInstanceOf[String]
+      if (verb != "post")
+          return
+
       val message: String = json("body").asInstanceOf[String]
 
       collector.emit(new Values(message))
